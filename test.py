@@ -6,6 +6,27 @@ from pygame.constants import CONTROLLER_BUTTON_LEFTSTICK
 from pygame.scrap import put
 pygame.init()
 
+def floodFillUtil(screen, x, y, prevC, field_of_push):
+     
+    # Base cases
+    if x < 0 or x >= len(screen[0]) or y < 0 or\
+        y >= len(screen) or screen[y][x] != prevC or\
+            field_of_push[y][x] == 1 or screen[y][x] != prevC:
+        if not (x < 0 or x >= len(screen[0]) or y < 0 or y >= len(screen)):
+            field_of_push[y][x] = 1    
+        return
+
+    field_of_push[y][x] = 1
+    # Recur for north, east, south and west
+    floodFillUtil(screen, x + 1, y, prevC, field_of_push)
+    floodFillUtil(screen, x - 1, y, prevC, field_of_push)
+    floodFillUtil(screen, x, y + 1, prevC, field_of_push)
+    floodFillUtil(screen, x, y - 1, prevC, field_of_push)
+
+def floodFill(screen, x, y, field_of_push):
+    prevC = screen[y][x]
+    floodFillUtil(screen, x, y, prevC, field_of_push)
+
 class Window:
     def __init__(self, width = 10, height = 10, fps = 30, name = "TicTac"):
         self.size_of_box = 50
@@ -82,6 +103,7 @@ FPS = 30
 basic_font = pygame.font.SysFont(None, 48)
 mouse_pos = [0, 0]
 click_flag = False
+flag = False
 width = 10
 height = 10
 field = init_feild(width=width, height=height)
@@ -97,14 +119,22 @@ while (True):
             mouse_pos = event.pos
         if event.type == pygame.MOUSEBUTTONDOWN and click_flag == False:
             click_flag = True
+            flag = True
         if event.type == pygame.MOUSEBUTTONUP:
             click_flag = False
-    if click_flag:
+    if flag == True:
         click_x = mouse_pos[0] // window.size_of_box
-        clock_y = mouse_pos[1] // window.size_of_box
-        field_of_push[mouse_pos[1] // window.size_of_box][mouse_pos[0] // window.size_of_box] = 1
-        if field[clock_y][click_x] == 0:
+        click_y = mouse_pos[1] // window.size_of_box
+        print(click_x, click_y, field[click_y][click_x])
+        if field[click_y][click_x] == 0:
+            for i in field_of_push:
+                print(i)
+            print()
+            floodFill(field, click_x, click_y, field_of_push)
+        field_of_push[click_y][click_x] = 1
+        if field[click_y][click_x] == 0:
             pass
+    flag = False
     # конец прорисовки окна
     pygame.display.update()
     window.clock.tick(10)
