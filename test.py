@@ -104,8 +104,8 @@ basic_font = pygame.font.SysFont(None, 48)
 mouse_pos = [0, 0]
 click_flag = False
 flag = False
-width = 10
-height = 10
+width = 20
+height = 20
 field = init_feild(width=width, height=height)
 field_of_push = [[0 for i in range(len(field[0]))]for i in range(len(field))]
 window = Window(width=len(field[0]), height=len(field))
